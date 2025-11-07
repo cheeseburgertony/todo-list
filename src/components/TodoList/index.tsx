@@ -1,4 +1,5 @@
 import { memo, useMemo, useState } from "react";
+import classNames from "classnames";
 import "./index.less";
 
 interface ITask {
@@ -112,7 +113,11 @@ const TodoList = memo(() => {
                 checked={task.completed}
                 onChange={() => handleToggleComplete(task.id)}
               />
-              <div className="content">
+              <div
+                className={classNames("content", {
+                  completed: task.completed,
+                })}
+              >
                 <div className="title">{task.title}</div>
                 <p className="desc">{task.description}</p>
               </div>

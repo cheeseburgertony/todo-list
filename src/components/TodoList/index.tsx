@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import "./index.less";
 
 interface ITask {
@@ -13,6 +13,9 @@ const TodoList = memo(() => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const [sortOrder, setSortOrder] = useState<"createdAt" | "title">(
+    "createdAt"
+  );
 
   const handleAddTask = () => {
     if (!taskTitle.trim()) return;
@@ -41,6 +44,17 @@ const TodoList = memo(() => {
     );
   };
 
+  const sortedTasks = useMemo(() => {
+    const sorted = [...tasks].sort((a, b) => {
+      if (sortOrder === "createdAt") {
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      } else {
+        return a.title.localeCompare(b.title);
+      }
+    });
+    return sorted;
+  }, [tasks, sortOrder]);
+
   return (
     <div className="todolist">
       <div className="add-task">
@@ -66,9 +80,30 @@ const TodoList = memo(() => {
         </div>
       </div>
 
+      <div className="task-control">
+        {/* 进度展示 */}
+        <div className="progress">
+          已完成任务
+          {tasks.filter((task) => task.completed).length}/{tasks.length}
+        </div>
+
+        <div className="sort">
+          排序方式：
+          <select
+            value={sortOrder}
+            onChange={(e) => {
+              setSortOrder(e.target.value as "createdAt" | "title");
+            }}
+          >
+            <option value="createdAt">创建时间</option>
+            <option value="title">标题</option>
+          </select>
+        </div>
+      </div>
+
       <div className="task-list">
         {tasks.length === 0 && <div>暂无任务，快去添加吧！</div>}
-        {tasks.map((task) => (
+        {sortedTasks.map((task) => (
           <div key={task.id} className="task-item">
             <div className="left">
               <input

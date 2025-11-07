@@ -1,0 +1,45 @@
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  height: 40px;
+  border-bottom: 1px solid #eee;
+
+  .left {
+    display: flex;
+    align-items: center;
+
+    .checkbox {
+      margin-right: 10px;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+
+      &.completed {
+        .title {
+          text-decoration: line-through;
+          color: #999;
+        }
+
+        .desc {
+          text-decoration: line-through;
+          color: #ccc;
+        }
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .desc {
+        padding: 0;
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+  }
+}

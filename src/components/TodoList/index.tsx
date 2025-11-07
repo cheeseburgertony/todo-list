@@ -7,8 +7,11 @@ interface ITask {
   title: string;
   description: string;
   completed: boolean;
+  important?: boolean;
   createdAt: number;
 }
+
+type sortOrderType = "createdAt" | "important" | "title";
 
 const TodoList = memo(() => {
   const [tasks, setTasks] = useState<ITask[]>(
@@ -16,9 +19,8 @@ const TodoList = memo(() => {
   );
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
-  const [sortOrder, setSortOrder] = useState<"createdAt" | "title">(
-    "createdAt"
-  );
+  const [sortOrder, setSortOrder] = useState<sortOrderType>("createdAt");
+  const [isAscending, setIsAscending] = useState(true);
 
   const updateTasks = (newTasks: ITask[]) => {
     setTasks(newTasks);
@@ -33,6 +35,7 @@ const TodoList = memo(() => {
       title: taskTitle,
       description: taskDescription,
       completed: false,
+      important: false,
       createdAt: new Date().getTime(),
     };
     updateTasks([...tasks, newTask]);
@@ -52,16 +55,46 @@ const TodoList = memo(() => {
     );
   };
 
+  const handleToggleImportant = (id: number) => {
+    updateTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, important: !task.important } : task
+      )
+    );
+  };
+
+  const toggleSortOrder = () => {
+    setIsAscending(!isAscending);
+  };
+
   const sortedTasks = useMemo(() => {
     const sorted = [...tasks].sort((a, b) => {
+      let res = 0;
       if (sortOrder === "createdAt") {
-        return a.createdAt - b.createdAt;
+        res = a.createdAt - b.createdAt;
+      } else if (sortOrder === "important") {
+        res = (a.important ? 1 : 0) - (b.important ? 1 : 0);
       } else {
-        return a.title.localeCompare(b.title);
+        res = a.title.localeCompare(b.title);
       }
+
+      return isAscending ? res : -res;
     });
     return sorted;
-  }, [tasks, sortOrder]);
+  }, [tasks, sortOrder, isAscending]);
+
+  const getSortedName = () => {
+    switch (sortOrder) {
+      case "createdAt":
+        return isAscending ? "按创建时间升序" : "按创建时间降序";
+      case "important":
+        return isAscending ? "按重要性升序" : "按重要性降序";
+      case "title":
+        return isAscending ? "按标题升序" : "按标题降序";
+      default:
+        return "";
+    }
+  };
 
   return (
     <div className="todolist">
@@ -96,14 +129,20 @@ const TodoList = memo(() => {
         </div>
 
         <div className="sort">
-          排序方式：
+          <span
+            onClick={toggleSortOrder}
+            style={{ cursor: "pointer", userSelect: "none" }}
+          >
+            {getSortedName()}
+          </span>
           <select
             value={sortOrder}
             onChange={(e) => {
-              setSortOrder(e.target.value as "createdAt" | "title");
+              setSortOrder(e.target.value as sortOrderType);
             }}
           >
             <option value="createdAt">创建时间</option>
+            <option value="important">重要性</option>
             <option value="title">标题</option>
           </select>
         </div>
@@ -130,6 +169,9 @@ const TodoList = memo(() => {
               </div>
             </div>
             <div className="right">
+              <button onClick={() => handleToggleImportant(task.id)}>
+                {task.important ? "取消重要" : "标记为重要"}
+              </button>
               <button onClick={() => handleTaskDelete(task.id)}>删除</button>
             </div>
           </div>

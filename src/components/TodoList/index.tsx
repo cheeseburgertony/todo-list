@@ -33,6 +33,14 @@ const TodoList = memo(() => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
+  const handleToggleComplete = (id: number) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
   return (
     <div className="todolist">
       <div className="add-task">
@@ -63,8 +71,16 @@ const TodoList = memo(() => {
         {tasks.map((task) => (
           <div key={task.id} className="task-item">
             <div className="left">
-              <div className="title">{task.title}</div>
-              <p className="desc">{task.description}</p>
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={task.completed}
+                onChange={() => handleToggleComplete(task.id)}
+              />
+              <div className="content">
+                <div className="title">{task.title}</div>
+                <p className="desc">{task.description}</p>
+              </div>
             </div>
             <div className="right">
               <button onClick={() => handleTaskDelete(task.id)}>删除</button>

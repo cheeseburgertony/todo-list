@@ -7,16 +7,23 @@ interface ITask {
   title: string;
   description: string;
   completed: boolean;
-  createdAt: Date;
+  createdAt: number;
 }
 
 const TodoList = memo(() => {
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>(
+    JSON.parse(localStorage.getItem("tasks") || "[]")
+  );
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [sortOrder, setSortOrder] = useState<"createdAt" | "title">(
     "createdAt"
   );
+
+  const updateTasks = (newTasks: ITask[]) => {
+    setTasks(newTasks);
+    localStorage.setItem("tasks", JSON.stringify(newTasks));
+  };
 
   const handleAddTask = () => {
     if (!taskTitle.trim()) return;
@@ -26,19 +33,19 @@ const TodoList = memo(() => {
       title: taskTitle,
       description: taskDescription,
       completed: false,
-      createdAt: new Date(),
+      createdAt: new Date().getTime(),
     };
-    setTasks([...tasks, newTask]);
+    updateTasks([...tasks, newTask]);
     setTaskTitle("");
     setTaskDescription("");
   };
 
   const handleTaskDelete = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    updateTasks(tasks.filter((task) => task.id !== id));
   };
 
   const handleToggleComplete = (id: number) => {
-    setTasks(
+    updateTasks(
       tasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
@@ -48,7 +55,7 @@ const TodoList = memo(() => {
   const sortedTasks = useMemo(() => {
     const sorted = [...tasks].sort((a, b) => {
       if (sortOrder === "createdAt") {
-        return a.createdAt.getTime() - b.createdAt.getTime();
+        return a.createdAt - b.createdAt;
       } else {
         return a.title.localeCompare(b.title);
       }

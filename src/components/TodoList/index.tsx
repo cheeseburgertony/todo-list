@@ -15,6 +15,10 @@ const TodoList = memo(() => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<Set<number>>(
+    new Set()
+  );
+  const [isBatchMode, setIsBatchMode] = useState(false);
 
   const handleAddTask = (title: string, description: string) => {
     const newTask: ITask = {
@@ -63,6 +67,37 @@ const TodoList = memo(() => {
     );
   };
 
+  // 批量删除相关功能
+  const toggleBatchMode = () => {
+    setIsBatchMode(!isBatchMode);
+    setSelectedTaskIds(new Set());
+  };
+
+  const toggleTaskSelection = (taskId: number) => {
+    const newSelected = new Set(selectedTaskIds);
+    if (newSelected.has(taskId)) {
+      newSelected.delete(taskId);
+    } else {
+      newSelected.add(taskId);
+    }
+    setSelectedTaskIds(newSelected);
+  };
+
+  const selectAllTasks = () => {
+    const allTaskIds = new Set(filteredSortedTasks.map((task) => task.id));
+    setSelectedTaskIds(allTaskIds);
+  };
+
+  const clearSelection = () => {
+    setSelectedTaskIds(new Set());
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedTaskIds.size === 0) return;
+    updateTasks(tasks.filter((task) => !selectedTaskIds.has(task.id)));
+    setSelectedTaskIds(new Set());
+  };
+
   // 过滤和排序任务
   const filteredSortedTasks = useMemo(() => {
     let filtered = tasks;
@@ -97,7 +132,6 @@ const TodoList = memo(() => {
       {/* 固定的搜索和控制面板 */}
       <div className="sticky-header">
         <SearchBox value={searchKeyword} onChange={setSearchKeyword} />
-
         <TaskControl
           completedCount={tasks.filter((task) => task.completed).length}
           totalCount={tasks.length}
@@ -105,6 +139,12 @@ const TodoList = memo(() => {
           isAscending={isAscending}
           onToggleSortOrder={toggleSortOrder}
           onChangeSortOrder={setSortOrder}
+          isBatchMode={isBatchMode}
+          selectedCount={selectedTaskIds.size}
+          onToggleBatchMode={toggleBatchMode}
+          onSelectAll={selectAllTasks}
+          onClearSelection={clearSelection}
+          onBatchDelete={handleBatchDelete}
         />
       </div>
 
@@ -125,6 +165,9 @@ const TodoList = memo(() => {
             onToggleImportant={handleToggleImportant}
             onTaskDelete={handleTaskDelete}
             onClick={handleTaskClick}
+            isBatchMode={isBatchMode}
+            isSelected={selectedTaskIds.has(task.id)}
+            onToggleSelection={toggleTaskSelection}
           />
         ))}
       </div>

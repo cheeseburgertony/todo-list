@@ -11,6 +11,9 @@ interface ITaskItemProps {
   onToggleImportant: (id: number) => void;
   onTaskDelete: (id: number) => void;
   onClick: (task: ITask) => void;
+  isBatchMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelection?: (id: number) => void;
 }
 
 const TaskItem = memo(
@@ -20,6 +23,9 @@ const TaskItem = memo(
     onToggleImportant,
     onTaskDelete,
     onClick,
+    isBatchMode = false,
+    isSelected = false,
+    onToggleSelection,
   }: ITaskItemProps) => {
     // const createdDate = new Date(task.createdAt).toLocaleString("zh-CN");
     const titleRef = useRef<HTMLDivElement>(null);
@@ -28,6 +34,12 @@ const TaskItem = memo(
     const [isDescOverflow, setIsDescOverflow] = useState(false);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      // 批量模式下点击卡片切换选择状态
+      if (isBatchMode && onToggleSelection) {
+        onToggleSelection(task.id);
+        return;
+      }
+
       const target = e.target as HTMLElement;
       if (
         target.closest("button") ||
@@ -54,16 +66,26 @@ const TaskItem = memo(
 
     return (
       <Card
-        className={classNames("task-item", { completed: task.completed })}
+        className={classNames("task-item", { 
+          completed: task.completed,
+          selected: isSelected && isBatchMode 
+        })}
         hoverable
         onClick={handleClick}
       >
         <div className="task-content">
           <div className="task-left">
-            <Checkbox
-              checked={task.completed}
-              onChange={() => onToggleComplete(task.id)}
-            />
+            {isBatchMode ? (
+              <Checkbox
+                checked={isSelected}
+                onChange={() => onToggleSelection?.(task.id)}
+              />
+            ) : (
+              <Checkbox
+                checked={task.completed}
+                onChange={() => onToggleComplete(task.id)}
+              />
+            )}
             <div className="task-info">
               <Tooltip title={isTitleOverflow ? task.title : ""}>
                 <div className="task-title">

@@ -4,6 +4,7 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
+import BatchActions from "../BatchActions";
 import type { SortOrderType } from "../../types";
 import "./index.less";
 
@@ -14,6 +15,13 @@ interface ITaskControlProps {
   isAscending: boolean;
   onToggleSortOrder: () => void;
   onChangeSortOrder: (order: SortOrderType) => void;
+  // 批量操作相关
+  isBatchMode?: boolean;
+  selectedCount?: number;
+  onToggleBatchMode?: () => void;
+  onSelectAll?: () => void;
+  onClearSelection?: () => void;
+  onBatchDelete?: () => void;
 }
 
 const TaskControl = memo(
@@ -24,6 +32,12 @@ const TaskControl = memo(
     isAscending,
     onToggleSortOrder,
     onChangeSortOrder,
+    isBatchMode = false,
+    selectedCount = 0,
+    onToggleBatchMode,
+    onSelectAll,
+    onClearSelection,
+    onBatchDelete,
   }: ITaskControlProps) => {
     const percent =
       totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
@@ -75,6 +89,17 @@ const TaskControl = memo(
               </Tag>
             </Space>
           </div>
+
+          {/* 批量编辑 */}
+          <BatchActions
+            isBatchMode={isBatchMode}
+            selectedCount={selectedCount}
+            totalCount={totalCount}
+            onToggleBatchMode={onToggleBatchMode!}
+            onSelectAll={onSelectAll!}
+            onClearSelection={onClearSelection!}
+            onBatchDelete={onBatchDelete!}
+          />
         </Space>
       </Card>
     );

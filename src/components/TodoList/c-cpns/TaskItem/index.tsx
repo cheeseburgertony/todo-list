@@ -10,6 +10,7 @@ interface ITaskItemProps {
   onToggleComplete: (id: number) => void;
   onToggleImportant: (id: number) => void;
   onTaskDelete: (id: number) => void;
+  onClick: (task: ITask) => void;
 }
 
 const TaskItem = memo(
@@ -18,12 +19,25 @@ const TaskItem = memo(
     onToggleComplete,
     onToggleImportant,
     onTaskDelete,
+    onClick,
   }: ITaskItemProps) => {
     // const createdDate = new Date(task.createdAt).toLocaleString("zh-CN");
     const titleRef = useRef<HTMLDivElement>(null);
     const descRef = useRef<HTMLDivElement>(null);
     const [isTitleOverflow, setIsTitleOverflow] = useState(false);
     const [isDescOverflow, setIsDescOverflow] = useState(false);
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest("button") ||
+        target.closest(".ant-checkbox-wrapper") ||
+        target.closest("input[type='checkbox']")
+      ) {
+        return;
+      }
+      onClick(task);
+    };
 
     useEffect(() => {
       if (titleRef.current) {
@@ -42,6 +56,7 @@ const TaskItem = memo(
       <Card
         className={classNames("task-item", { completed: task.completed })}
         hoverable
+        onClick={handleClick}
       >
         <div className="task-content">
           <div className="task-left">

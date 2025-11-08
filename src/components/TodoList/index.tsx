@@ -4,6 +4,7 @@ import AddTask from "./c-cpns/AddTask";
 import TaskControl from "./c-cpns/TaskControl";
 import TaskItem from "./c-cpns/TaskItem";
 import SearchBox from "./c-cpns/SearchBox";
+import TaskDetail from "./c-cpns/TaskDetail";
 import type { ITask, sortOrderType } from "./types";
 import "./index.less";
 
@@ -12,6 +13,8 @@ const TodoList = memo(() => {
   const [sortOrder, setSortOrder] = useState<sortOrderType>("createdAt");
   const [isAscending, setIsAscending] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const handleAddTask = (title: string, description: string) => {
     const newTask: ITask = {
@@ -49,6 +52,17 @@ const TodoList = memo(() => {
     setIsAscending(!isAscending);
   };
 
+  const handleTaskClick = (task: ITask) => {
+    setSelectedTask(task);
+    setIsDetailOpen(true);
+  };
+
+  const handleTaskUpdate = (updatedTask: ITask) => {
+    updateTasks(
+      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+  };
+
   // 过滤和排序任务
   const filteredSortedTasks = useMemo(() => {
     let filtered = tasks;
@@ -57,7 +71,7 @@ const TodoList = memo(() => {
       filtered = tasks.filter(
         (task) =>
           task.title.toLocaleLowerCase().includes(keyword) ||
-          task.description.toLocaleLowerCase().includes(keyword)
+          task.description?.toLocaleLowerCase().includes(keyword)
       );
     }
 
@@ -110,9 +124,17 @@ const TodoList = memo(() => {
             onToggleComplete={handleToggleComplete}
             onToggleImportant={handleToggleImportant}
             onTaskDelete={handleTaskDelete}
+            onClick={handleTaskClick}
           />
         ))}
       </div>
+
+      <TaskDetail
+        task={selectedTask}
+        open={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onUpdate={handleTaskUpdate}
+      />
     </div>
   );
 });

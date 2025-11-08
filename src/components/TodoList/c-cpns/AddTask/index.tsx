@@ -1,53 +1,83 @@
 import { memo, useState } from "react";
-import { Button, Card, Input } from "antd";
-import "./index.less";
+import { Modal, Input, Form, FloatButton } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 interface IAddTaskProps {
   onAddTask: (title: string, description: string) => void;
 }
 
 const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
-  const handleAddTask = () => {
-    if (!taskTitle.trim()) return;
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
-    onAddTask(taskTitle, taskDescription);
-    setTaskTitle("");
-    setTaskDescription("");
+  const handleFinish = (values: { title: string; description?: string }) => {
+    onAddTask(values.title.trim(), values.description?.trim() || "");
+    form.resetFields();
+    setIsModalOpen(false);
+  };
+
+  const handleOk = () => {
+    form.submit();
+  };
+
+  const handleCancel = () => {
+    form.resetFields();
+    setIsModalOpen(false);
   };
 
   return (
-    <Card title="添加新任务" className="add-task">
-      <div className="form-item">
-        <Input
-          placeholder="请输入任务标题"
-          value={taskTitle}
-          onChange={(e) => setTaskTitle(e.target.value)}
-          onPressEnter={handleAddTask}
-          size="large"
-          required
-          />
-      </div>
-      <div className="form-item">
-        <Input
-          placeholder="请输入任务描述（可选）"
-          value={taskDescription}
-          onChange={(e) => setTaskDescription(e.target.value)}
-          size="large"
-        />
-      </div>
-      <Button
+    <>
+      <FloatButton
+        icon={<PlusOutlined />}
         type="primary"
-        // icon={<PlusOutlined />}
-        onClick={handleAddTask}
-        block
-        size="large"
+        onClick={showModal}
+        tooltip="添加新任务"
+      />
+
+      <Modal
+        title="添加新任务"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="添加"
+        cancelText="取消"
+        width={500}
       >
-        添加任务
-      </Button>
-    </Card>
+        <Form
+          form={form}
+          layout="vertical"
+          className="add-task-form"
+          onFinish={handleFinish}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              form.submit();
+            }
+          }}
+        >
+          <Form.Item
+            label="任务标题"
+            name="title"
+            rules={[
+              { required: true, message: "请输入任务标题" },
+              { whitespace: true, message: "任务标题不能为空格" },
+            ]}
+          >
+            <Input placeholder="请输入任务标题" size="large" />
+          </Form.Item>
+          <Form.Item
+            label="任务描述"
+            name="description"
+            rules={[{ whitespace: true, message: "任务描述不能为空格" }]}
+          >
+            <Input placeholder="请输入任务描述（可选）" size="large" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 });
 

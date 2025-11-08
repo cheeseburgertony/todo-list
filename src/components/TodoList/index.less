@@ -1,8 +1,30 @@
 .todolist {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 24px;
-  background-color: #ddd;
+  padding: 40px 24px;
+
+  &::before {
+    content: "📝 我的Todo List";
+    display: block;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 32px;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 
   .task-list {
     .empty-tip {
@@ -10,6 +32,9 @@
       padding: 48px 0;
       color: #999;
       font-size: 14px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
   }
 }

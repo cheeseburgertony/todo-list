@@ -80,19 +80,29 @@ const TodoList = memo(() => {
     <div className="todolist">
       <AddTask onAddTask={handleAddTask} />
 
-      <SearchBox value={searchKeyword} onChange={setSearchKeyword} />
+      {/* 固定的搜索和控制面板 */}
+      <div className="sticky-header">
+        <SearchBox value={searchKeyword} onChange={setSearchKeyword} />
 
-      <TaskControl
-        completedCount={tasks.filter((task) => task.completed).length}
-        totalCount={tasks.length}
-        sortOrder={sortOrder}
-        isAscending={isAscending}
-        onToggleSortOrder={toggleSortOrder}
-        onChangeSortOrder={setSortOrder}
-      />
+        <TaskControl
+          completedCount={tasks.filter((task) => task.completed).length}
+          totalCount={tasks.length}
+          sortOrder={sortOrder}
+          isAscending={isAscending}
+          onToggleSortOrder={toggleSortOrder}
+          onChangeSortOrder={setSortOrder}
+        />
+      </div>
 
+      {/* 可滚动的任务列表 */}
       <div className="task-list">
-        {tasks.length === 0 && <div>暂无任务，快去添加吧！</div>}
+        {filteredSortedTasks.length === 0 && (
+          <div className="empty-tip">
+            {searchKeyword
+              ? `没有找到包含"${searchKeyword}"的任务`
+              : "暂无任务，快去添加吧！"}
+          </div>
+        )}
         {filteredSortedTasks.map((task) => (
           <TaskItem
             key={task.id}

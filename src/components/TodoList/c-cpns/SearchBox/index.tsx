@@ -2,7 +2,6 @@ import { memo, useState, useEffect } from "react";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDebounceFn } from "ahooks";
-import "./index.less";
 
 interface ISearchBoxProps {
   value: string;

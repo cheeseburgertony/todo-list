@@ -1,10 +1,10 @@
 import { memo, useMemo, useState } from "react";
+import { useTodoStorage } from "./hooks/useTodoStorage";
 import AddTask from "./c-cpns/AddTask";
 import TaskControl from "./c-cpns/TaskControl";
 import TaskItem from "./c-cpns/TaskItem";
 import type { ITask, sortOrderType } from "./types";
 import "./index.less";
-import { useTodoStorage } from "./hooks/useTodoStorage";
 
 const TodoList = memo(() => {
   const { tasks, updateTasks } = useTodoStorage();

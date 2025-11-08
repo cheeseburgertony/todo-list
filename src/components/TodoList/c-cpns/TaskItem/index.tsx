@@ -1,5 +1,6 @@
 import { memo } from "react";
-import classNames from "classnames";
+import { Card, Checkbox, Button, Space, Tag, Tooltip } from "antd";
+import { DeleteOutlined, StarOutlined, StarFilled } from "@ant-design/icons";
 import type { ITask } from "../../types";
 import "./index.less";
 
@@ -17,31 +18,56 @@ const TaskItem = memo(
     onToggleImportant,
     onTaskDelete,
   }: ITaskItemProps) => {
+    // const createdDate = new Date(task.createdAt).toLocaleString("zh-CN");
+
     return (
-      <div key={task.id} className="task-item">
-        <div className="left">
-          <input
-            type="checkbox"
-            className="checkbox"
-            checked={task.completed}
-            onChange={() => onToggleComplete(task.id)}
-          />
-          <div
-            className={classNames("content", {
-              completed: task.completed,
-            })}
-          >
-            <div className="title">{task.title}</div>
-            <p className="desc">{task.description}</p>
+      <Card
+        className={`task-item ${task.completed ? "completed" : ""}`}
+        hoverable
+      >
+        <div className="task-content">
+          <div className="task-left">
+            <Checkbox
+              checked={task.completed}
+              onChange={() => onToggleComplete(task.id)}
+            />
+            <div className="task-info">
+              <Tooltip title={task.title}>
+                <div className="task-title">
+                  {task.title}
+                  {task.important && (
+                    <Tag color="red" style={{ marginLeft: 8 }}>
+                      重要
+                    </Tag>
+                  )}
+                </div>
+              </Tooltip>
+              {task.description && (
+                <Tooltip title={task.description}>
+                  <div className="task-description">{task.description}</div>
+                </Tooltip>
+              )}
+            </div>
+          </div>
+
+          <div className="task-actions">
+            <Space>
+              <Button
+                type={task.important ? "primary" : "default"}
+                icon={task.important ? <StarFilled /> : <StarOutlined />}
+                onClick={() => onToggleImportant(task.id)}
+                danger={task.important}
+              />
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => onTaskDelete(task.id)}
+              />
+            </Space>
           </div>
         </div>
-        <div className="right">
-          <button onClick={() => onToggleImportant(task.id)}>
-            {task.important ? "取消重要" : "标记为重要"}
-          </button>
-          <button onClick={() => onTaskDelete(task.id)}>删除</button>
-        </div>
-      </div>
+      </Card>
     );
   }
 );

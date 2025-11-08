@@ -1,4 +1,9 @@
 import { memo } from "react";
+import { Card, Progress, Select, Space, Tag } from "antd";
+import {
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+} from "@ant-design/icons";
 import type { sortOrderType } from "../../types";
 import "./index.less";
 
@@ -20,46 +25,58 @@ const TaskControl = memo(
     onToggleSortOrder,
     onChangeSortOrder,
   }: ITaskControlProps) => {
-    const getSortedName = () => {
-      switch (sortOrder) {
-        case "createdAt":
-          return isAscending ? "按创建时间升序" : "按创建时间降序";
-        case "important":
-          return isAscending ? "按重要性升序" : "按重要性降序";
-        case "title":
-          return isAscending ? "按标题升序" : "按标题降序";
-        default:
-          return "";
-      }
-    };
+    const percent =
+      totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+
+    const sortOptions = [
+      { label: "创建时间", value: "createdAt" },
+      { label: "重要性", value: "important" },
+      { label: "标题", value: "title" },
+    ];
 
     return (
-      <div className="task-control">
-        {/* 进度展示 */}
-        <div className="progress">
-          已完成任务
-          {completedCount}/{totalCount}
-        </div>
+      <Card className="task-control">
+        <Space direction="vertical" style={{ width: "100%" }} size="middle">
+          <div className="progress-section">
+            <div className="progress-info">
+              <span>任务进度</span>
+              <span className="count">
+                {completedCount} / {totalCount}
+              </span>
+            </div>
+            <Progress
+              percent={percent}
+              status={percent === 100 ? "success" : "active"}
+            />
+          </div>
 
-        <div className="sort">
-          <span
-            onClick={onToggleSortOrder}
-            style={{ cursor: "pointer", userSelect: "none" }}
-          >
-            {getSortedName()}
-          </span>
-          <select
-            value={sortOrder}
-            onChange={(e) => {
-              onChangeSortOrder(e.target.value as sortOrderType);
-            }}
-          >
-            <option value="createdAt">创建时间</option>
-            <option value="important">重要性</option>
-            <option value="title">标题</option>
-          </select>
-        </div>
-      </div>
+          <div className="sort-section">
+            <Space>
+              <span>排序方式:</span>
+              <Select
+                value={sortOrder}
+                onChange={onChangeSortOrder}
+                options={sortOptions}
+                style={{ width: 120 }}
+              />
+              <Tag
+                icon={
+                  isAscending ? (
+                    <SortAscendingOutlined />
+                  ) : (
+                    <SortDescendingOutlined />
+                  )
+                }
+                color={isAscending ? "blue" : "purple"}
+                style={{ cursor: "pointer" }}
+                onClick={onToggleSortOrder}
+              >
+                {isAscending ? "升序" : "降序"}
+              </Tag>
+            </Space>
+          </div>
+        </Space>
+      </Card>
     );
   }
 );

@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import { Button, Card, Input } from "antd";
 import "./index.less";
 
 interface IAddTaskProps {
@@ -18,28 +19,35 @@ const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
   };
 
   return (
-    <div className="add-task">
-      <div className="header">Todo List</div>
-      <div className="body">
-        <label>
-          任务
-          <input
-            type="text"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
+    <Card title="添加新任务" className="add-task">
+      <div className="form-item">
+        <Input
+          placeholder="请输入任务标题"
+          value={taskTitle}
+          onChange={(e) => setTaskTitle(e.target.value)}
+          onPressEnter={handleAddTask}
+          size="large"
+          required
           />
-        </label>
-        <label>
-          描述
-          <input
-            type="text"
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
-          />
-        </label>
-        <button onClick={handleAddTask}>添加任务</button>
       </div>
-    </div>
+      <div className="form-item">
+        <Input
+          placeholder="请输入任务描述（可选）"
+          value={taskDescription}
+          onChange={(e) => setTaskDescription(e.target.value)}
+          size="large"
+        />
+      </div>
+      <Button
+        type="primary"
+        // icon={<PlusOutlined />}
+        onClick={handleAddTask}
+        block
+        size="large"
+      >
+        添加任务
+      </Button>
+    </Card>
   );
 });
 

@@ -1,45 +1,64 @@
 .task-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  height: 40px;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
 
-  .left {
+  > .ant-card-body {
+    padding: 18px;
+  }
+
+  &.completed {
+    opacity: 0.6;
+
+    .task-title {
+      text-decoration: line-through;
+      color: #999;
+    }
+  }
+
+  .task-content {
     display: flex;
+    justify-content: space-between;
     align-items: center;
 
-    .checkbox {
-      margin-right: 10px;
-    }
-
-    .content {
+    .task-left {
       display: flex;
-      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      max-width: calc(100% - 100px);
 
-      &.completed {
-        .title {
-          text-decoration: line-through;
+      .task-info {
+        max-width: 100%;
+
+        .task-title {
+          max-width: 100%;
+          font-size: 18px;
+          font-weight: 500;
+          margin-bottom: 4px;
+          display: flex;
+          align-items: center;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .task-description {
+          max-width: 100%;
+          color: #666;
+          font-size: 14px;
+          margin-bottom: 4px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .task-meta {
+          font-size: 12px;
           color: #999;
         }
-
-        .desc {
-          text-decoration: line-through;
-          color: #ccc;
-        }
       }
+    }
 
-      .title {
-        font-size: 18px;
-        font-weight: bold;
-      }
-
-      .desc {
-        padding: 0;
-        margin: 0;
-        font-size: 14px;
-      }
+    .task-actions {
+      flex-shrink: 0;
     }
   }
 }

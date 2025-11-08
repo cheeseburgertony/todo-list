@@ -3,6 +3,7 @@ import { useTodoStorage } from "./hooks/useTodoStorage";
 import AddTask from "./c-cpns/AddTask";
 import TaskControl from "./c-cpns/TaskControl";
 import TaskItem from "./c-cpns/TaskItem";
+import SearchBox from "./c-cpns/SearchBox";
 import type { ITask, sortOrderType } from "./types";
 import "./index.less";
 
@@ -10,6 +11,7 @@ const TodoList = memo(() => {
   const { tasks, updateTasks } = useTodoStorage();
   const [sortOrder, setSortOrder] = useState<sortOrderType>("createdAt");
   const [isAscending, setIsAscending] = useState(true);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const handleAddTask = (title: string, description: string) => {
     const newTask: ITask = {
@@ -47,8 +49,19 @@ const TodoList = memo(() => {
     setIsAscending(!isAscending);
   };
 
-  const sortedTasks = useMemo(() => {
-    const sorted = [...tasks].sort((a, b) => {
+  // 过滤和排序任务
+  const filteredSortedTasks = useMemo(() => {
+    let filtered = tasks;
+    if (searchKeyword.trim()) {
+      const keyword = searchKeyword.trim().toLowerCase();
+      filtered = tasks.filter(
+        (task) =>
+          task.title.toLocaleLowerCase().includes(keyword) ||
+          task.description.toLocaleLowerCase().includes(keyword)
+      );
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
       let res = 0;
       if (sortOrder === "createdAt") {
         res = a.createdAt - b.createdAt;
@@ -61,11 +74,13 @@ const TodoList = memo(() => {
       return isAscending ? res : -res;
     });
     return sorted;
-  }, [tasks, sortOrder, isAscending]);
+  }, [tasks, sortOrder, isAscending, searchKeyword]);
 
   return (
     <div className="todolist">
       <AddTask onAddTask={handleAddTask} />
+
+      <SearchBox value={searchKeyword} onChange={setSearchKeyword} />
 
       <TaskControl
         completedCount={tasks.filter((task) => task.completed).length}
@@ -78,7 +93,7 @@ const TodoList = memo(() => {
 
       <div className="task-list">
         {tasks.length === 0 && <div>暂无任务，快去添加吧！</div>}
-        {sortedTasks.map((task) => (
+        {filteredSortedTasks.map((task) => (
           <TaskItem
             key={task.id}
             task={task}

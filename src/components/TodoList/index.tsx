@@ -5,12 +5,12 @@ import TaskControl from "./c-cpns/TaskControl";
 import TaskItem from "./c-cpns/TaskItem";
 import SearchBox from "./c-cpns/SearchBox";
 import TaskDetail from "./c-cpns/TaskDetail";
-import type { ITask, sortOrderType } from "./types";
+import type { ITask, SortOrderType } from "./types";
 import "./index.less";
 
 const TodoList = memo(() => {
   const { tasks, updateTasks } = useTodoStorage();
-  const [sortOrder, setSortOrder] = useState<sortOrderType>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrderType>("createdAt");
   const [isAscending, setIsAscending] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);

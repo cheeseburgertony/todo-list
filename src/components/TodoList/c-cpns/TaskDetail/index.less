@@ -7,4 +7,55 @@
     color: #666;
     font-size: 14px;
   }
+
+  .steps-section {
+    margin: 16px 0;
+
+    .steps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      .steps-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .steps-count {
+        font-size: 14px;
+        color: #999;
+      }
+    }
+
+    .steps-list {
+      margin-bottom: 16px;
+
+      .step-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: #fafafa;
+        border-radius: 6px;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #f0f0f0;
+        }
+
+        .ant-checkbox-wrapper {
+          flex: 1;
+        }
+      }
+    }
+
+    .add-step {
+      .ant-input-affix-wrapper {
+        border-radius: 6px;
+      }
+    }
+  }
 }

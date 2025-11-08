@@ -1,7 +1,21 @@
-import { memo, useEffect } from "react";
-import { Drawer, Form, Input, Switch, Space, Button } from "antd";
-import { ClockCircleOutlined, StarOutlined } from "@ant-design/icons";
-import type { ITask } from "../../types";
+import { memo, useEffect, useState } from "react";
+import {
+  Drawer,
+  Form,
+  Input,
+  Switch,
+  Space,
+  Button,
+  Checkbox,
+  Divider,
+} from "antd";
+import {
+  ClockCircleOutlined,
+  StarOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import type { ITask, IStep } from "../../types";
 import "./index.less";
 
 interface ITaskDetailProps {
@@ -14,6 +28,8 @@ interface ITaskDetailProps {
 const TaskDetail = memo(
   ({ task, open, onClose, onUpdate }: ITaskDetailProps) => {
     const [form] = Form.useForm();
+    const [inputValue, setInputValue] = useState("");
+    const [steps, setSteps] = useState<IStep[]>([]);
 
     useEffect(() => {
       if (task) {
@@ -23,6 +39,7 @@ const TaskDetail = memo(
           completed: task.completed,
           important: task.important,
         });
+        setSteps(task.steps || []);
       }
     }, [task, form]);
 
@@ -35,6 +52,7 @@ const TaskDetail = memo(
             description: values.description?.trim() || "",
             completed: values.completed,
             important: values.important,
+            steps: steps,
           });
           onClose();
         }
@@ -45,8 +63,35 @@ const TaskDetail = memo(
       // 关闭则恢复表单初始值
       if (task) {
         form.setFieldsValue(task);
+        setSteps(task.steps || []);
+        setInputValue("");
       }
       onClose();
+    };
+
+    const handleAddStep = () => {
+      if (inputValue.trim() === "") return;
+      setSteps([
+        ...steps,
+        {
+          id: Date.now(),
+          title: inputValue.trim(),
+          completed: false,
+        },
+      ]);
+      setInputValue("");
+    };
+
+    const handleToggleStep = (id: number) => {
+      setSteps(
+        steps.map((step) =>
+          step.id === id ? { ...step, completed: !step.completed } : step
+        )
+      );
+    };
+
+    const handleDeleteStep = (id: number) => {
+      setSteps(steps.filter((step) => step.id !== id));
     };
 
     const createdDate = task
@@ -115,6 +160,67 @@ const TaskDetail = memo(
                 unCheckedChildren={<StarOutlined />}
               />
             </Form.Item>
+
+            <Divider />
+
+            <div className="steps-section">
+              <div className="steps-header">
+                <span className="steps-title">任务步骤</span>
+                <span className="steps-count">
+                  {steps.filter((s) => s.completed).length} / {steps.length}
+                </span>
+              </div>
+
+              <div className="steps-list">
+                {steps.map((step) => (
+                  <div key={step.id} className="step-item">
+                    <Checkbox
+                      checked={step.completed}
+                      onChange={() => handleToggleStep(step.id)}
+                    >
+                      <span
+                        style={{
+                          textDecoration: step.completed
+                            ? "line-through"
+                            : "none",
+                          color: step.completed ? "#999" : "#333",
+                        }}
+                      >
+                        {step.title}
+                      </span>
+                    </Checkbox>
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleDeleteStep(step.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="add-step">
+                <Input
+                  placeholder="添加新步骤..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onPressEnter={handleAddStep}
+                  suffix={
+                    <Button
+                      type="link"
+                      icon={<PlusOutlined />}
+                      onClick={handleAddStep}
+                      disabled={!inputValue.trim()}
+                    >
+                      添加
+                    </Button>
+                  }
+                />
+              </div>
+            </div>
+
+            <Divider />
 
             <div className="task-meta">
               <ClockCircleOutlined style={{ marginRight: 8 }} />

@@ -4,16 +4,16 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
-import type { sortOrderType } from "../../types";
+import type { SortOrderType } from "../../types";
 import "./index.less";
 
 interface ITaskControlProps {
   completedCount: number;
   totalCount: number;
-  sortOrder: sortOrderType;
+  sortOrder: SortOrderType;
   isAscending: boolean;
   onToggleSortOrder: () => void;
-  onChangeSortOrder: (order: sortOrderType) => void;
+  onChangeSortOrder: (order: SortOrderType) => void;
 }
 
 const TaskControl = memo(

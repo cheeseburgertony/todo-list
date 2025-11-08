@@ -1,3 +1,9 @@
+export interface IStep {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
 export interface ITask {
   id: number;
   title: string;
@@ -5,6 +11,7 @@ export interface ITask {
   completed: boolean;
   important?: boolean;
   createdAt: number;
+  steps?: IStep[];
 }
 
-export type sortOrderType = "createdAt" | "important" | "title";
+export type SortOrderType = "createdAt" | "important" | "title";

@@ -1,4 +1,4 @@
-# 📝 Todo List - 现代化任务管理应用
+# 📝 Todo List - 个人代办管理应用
 
 一个功能完善、界面精美的 Todo List 应用。
 

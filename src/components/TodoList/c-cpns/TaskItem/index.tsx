@@ -1,6 +1,7 @@
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Card, Checkbox, Button, Space, Tag, Tooltip } from "antd";
 import { DeleteOutlined, StarOutlined, StarFilled } from "@ant-design/icons";
+import classNames from "classnames";
 import type { ITask } from "../../types";
 import "./index.less";
 
@@ -19,10 +20,27 @@ const TaskItem = memo(
     onTaskDelete,
   }: ITaskItemProps) => {
     // const createdDate = new Date(task.createdAt).toLocaleString("zh-CN");
+    const titleRef = useRef<HTMLDivElement>(null);
+    const descRef = useRef<HTMLDivElement>(null);
+    const [isTitleOverflow, setIsTitleOverflow] = useState(false);
+    const [isDescOverflow, setIsDescOverflow] = useState(false);
+
+    useEffect(() => {
+      if (titleRef.current) {
+        setIsTitleOverflow(
+          titleRef.current.scrollWidth > titleRef.current.clientWidth
+        );
+      }
+      if (descRef.current) {
+        setIsDescOverflow(
+          descRef.current.scrollWidth > descRef.current.clientWidth
+        );
+      }
+    }, [task.title, task.description]);
 
     return (
       <Card
-        className={`task-item ${task.completed ? "completed" : ""}`}
+        className={classNames("task-item", { completed: task.completed })}
         hoverable
       >
         <div className="task-content">
@@ -32,9 +50,11 @@ const TaskItem = memo(
               onChange={() => onToggleComplete(task.id)}
             />
             <div className="task-info">
-              <Tooltip title={task.title}>
+              <Tooltip title={isTitleOverflow ? task.title : ""}>
                 <div className="task-title">
-                  {task.title}
+                  <span className="title-text" ref={titleRef}>
+                    {task.title}
+                  </span>
                   {task.important && (
                     <Tag color="red" style={{ marginLeft: 8 }}>
                       重要
@@ -43,8 +63,10 @@ const TaskItem = memo(
                 </div>
               </Tooltip>
               {task.description && (
-                <Tooltip title={task.description}>
-                  <div className="task-description">{task.description}</div>
+                <Tooltip title={isDescOverflow ? task.description : ""}>
+                  <div className="task-description" ref={descRef}>
+                    {task.description}
+                  </div>
                 </Tooltip>
               )}
             </div>

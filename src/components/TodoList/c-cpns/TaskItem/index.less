@@ -23,21 +23,28 @@
       display: flex;
       gap: 12px;
       flex: 1;
+      min-width: 0;
       max-width: calc(100% - 100px);
 
       .task-info {
+        flex: 1;
+        min-width: 0;
         max-width: 100%;
 
         .task-title {
-          max-width: 100%;
           font-size: 18px;
           font-weight: 500;
           margin-bottom: 4px;
           display: flex;
           align-items: center;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
+          min-width: 0;
+
+          .title-text {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            min-width: 0;
+          }
         }
 
         .task-description {

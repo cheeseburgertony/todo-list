@@ -1,5 +1,5 @@
-import { memo, useState } from "react";
-import { Modal, Input, Form, FloatButton } from "antd";
+import { memo, useRef, useState } from "react";
+import { Modal, Input, Form, FloatButton, type InputRef } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 interface IAddTaskProps {
@@ -9,6 +9,7 @@ interface IAddTaskProps {
 const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const titleInputRef = useRef<InputRef>(null);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -29,6 +30,14 @@ const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
     setIsModalOpen(false);
   };
 
+  const handleAfterOpenChange = (open: boolean) => {
+    if (open) {
+      setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 0);
+    }
+  };
+
   return (
     <>
       <FloatButton
@@ -46,6 +55,7 @@ const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
         okText="添加"
         cancelText="取消"
         width={500}
+        afterOpenChange={handleAfterOpenChange}
       >
         <Form
           form={form}
@@ -66,7 +76,11 @@ const AddTask = memo(({ onAddTask }: IAddTaskProps) => {
               { whitespace: true, message: "任务标题不能为空格" },
             ]}
           >
-            <Input placeholder="请输入任务标题" size="large" />
+            <Input
+              placeholder="请输入任务标题"
+              size="large"
+              ref={titleInputRef}
+            />
           </Form.Item>
           <Form.Item
             label="任务描述"
